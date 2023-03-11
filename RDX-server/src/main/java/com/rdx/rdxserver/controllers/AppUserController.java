@@ -28,7 +28,7 @@ public class AppUserController {
     }
 
     @GetMapping(produces = {"application/json"})
-    private ResponseEntity<AppUserEntity> getUser(@RequestParam int id) {
+    private ResponseEntity<AppUserEntity> getUser(@RequestParam(name = "id") int id) {
         AppUserEntity appUserEntity = appUserService.getUserById(id);
         return appUserEntity == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(appUserService.getUserById(id));
     }
