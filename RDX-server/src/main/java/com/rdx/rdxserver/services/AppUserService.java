@@ -1,14 +1,11 @@
 package com.rdx.rdxserver.services;
 
 import com.rdx.rdxserver.entities.AppUserEntity;
-import com.rdx.rdxserver.entities.WalletEntity;
 import com.rdx.rdxserver.repositories.AppUserRepository;
 import org.mindrot.jbcrypt.BCrypt;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Locale;
 
 @Service
 public class AppUserService {
@@ -28,7 +25,6 @@ public class AppUserService {
        if (appUserRepository.findByEmail(tempAppUser.getEmail()).isPresent()) {
            return null;
        }
-
 //        WalletEntity wallet = tempAppUser.getWalletEntity();
        // walletService.save(wallet)
         AppUserEntity newUser = AppUserEntity.builder()
@@ -39,6 +35,7 @@ public class AppUserService {
                 .verified(false)
                 .textCV(tempAppUser.getTextCV())
                 .build();
+       appUserRepository.save(newUser);
        //todo sa facem embeddingul si sa il salvam dupa tot in metoda asta
         return newUser;
     }
