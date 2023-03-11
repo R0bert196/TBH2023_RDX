@@ -21,6 +21,7 @@ public class CompanyEntity {
     @Access(AccessType.PROPERTY)
     private Integer id;
     private String cui;
+    private String url;
 
     @OneToOne
     @JoinColumn(name = "wallet_id", referencedColumnName = "id")
