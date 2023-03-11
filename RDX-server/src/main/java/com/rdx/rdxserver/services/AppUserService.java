@@ -6,6 +6,8 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 public class AppUserService {
@@ -46,7 +48,9 @@ public class AppUserService {
     }
 
     public List<AppUserEntity> findAll() {
-        return appUserRepository.findAll();
+        return appUserRepository.findAll().stream()
+                .peek(appUserEntity -> appUserEntity.setPassword(""))
+                .collect(Collectors.toList());
     }
 
     public boolean authenticateUser(String email, String password) {
