@@ -22,7 +22,7 @@ public class CompanyEntity {
     private Integer id;
     private String cui;
 
-    @ManyToOne
-    @JoinColumn(name = "return_wallet_id", referencedColumnName = "id")
+    @OneToOne
+    @JoinColumn(name = "wallet_id", referencedColumnName = "id")
     private WalletEntity walletEntity;
 }
