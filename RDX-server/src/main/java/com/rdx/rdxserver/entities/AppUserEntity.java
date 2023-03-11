@@ -39,4 +39,8 @@ public class AppUserEntity {
     @JoinColumn(name = "wallet_id", referencedColumnName = "id")
     private WalletEntity walletEntity;
 
+    @OneToOne(orphanRemoval = true)
+    @JoinColumn(name = "company_id")
+    private CompanyEntity companyEntity;
+
 }
