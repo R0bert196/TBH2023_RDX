@@ -3,8 +3,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import java.util.Date;
 
 public class JwtUtil {
@@ -24,13 +22,13 @@ public class JwtUtil {
                 .compact();
     }
 
-//    public static String getUsernameFromToken(String token) {
-//        Claims claims = Jwts.parser()
-//                .setSigningKey(SECRET_KEY)
-//                .parseClaimsJws(token)
-//                .getBody();
-//        return claims.getSubject();
-//    }
+    public static String getEmailFromToken(String token, String SECRET_KEY) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
+    }
 
 //    public static boolean validateToken(String token, String username) {
 //        String tokenUsername = getUsernameFromToken(token);

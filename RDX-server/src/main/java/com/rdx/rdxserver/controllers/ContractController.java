@@ -1,6 +1,9 @@
 package com.rdx.rdxserver.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.rdx.rdxserver.entities.AppUserEntity;
 import com.rdx.rdxserver.entities.ContractEntity;
+import com.rdx.rdxserver.services.AppUserService;
 import com.rdx.rdxserver.services.ContractService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +16,13 @@ import java.util.List;
 @CrossOrigin
 public class ContractController {
     private final ContractService contractService;
+    private final AppUserService appUserService;
 
-    public ContractController(ContractService contractService) {
+
+
+    public ContractController(ContractService contractService, AppUserService appUserService) {
         this.contractService = contractService;
+        this.appUserService = appUserService;
     }
 
     @GetMapping(produces = {"application/json"})
@@ -25,8 +32,9 @@ public class ContractController {
     }
 
     @PostMapping(value="/register",produces = {"application/json"})
-    private ResponseEntity<String> saveContract(@RequestBody ContractEntity tempContractEntity){
-        ContractEntity contractEntity = contractService.registerContract(tempContractEntity);
+    private ResponseEntity<String> saveContract(@RequestHeader(name = "Authorization") String token, @RequestBody ContractEntity tempContractEntity) throws JsonProcessingException {
+        AppUserEntity user = appUserService.getUserByToken(token);
+        ContractEntity contractEntity = contractService.registerContract(tempContractEntity, user);
         return contractEntity == null ? ResponseEntity.status(HttpStatus.CONFLICT).body("Contract Allready registered") : ResponseEntity.status(HttpStatus.CREATED).body("Contract Created");
     }
 

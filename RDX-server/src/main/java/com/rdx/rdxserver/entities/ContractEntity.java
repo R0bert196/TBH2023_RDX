@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
@@ -31,6 +32,7 @@ public class ContractEntity {
     //embedding sa le leg
     private String profileText;
     private Boolean paid = false;
+    private float budget;
     @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "profile_embeddings_id", unique = true, referencedColumnName = "id")
     private EmbeddingsEntity embeddingsEntity;
@@ -47,6 +49,7 @@ public class ContractEntity {
 
     @OneToOne
     @JoinColumn(name = "wallet_id", referencedColumnName = "id")
+    @Cascade(org.hibernate.annotations.CascadeType.PERSIST)
     private WalletEntity walletEntity;
 
 }
