@@ -43,4 +43,8 @@ public class AppUserService {
     public List<AppUserEntity> findAll() {
         return appUserRepository.findAll();
     }
+
+    public boolean authenticateUser(String email, String password) {
+        return appUserRepository.findByEmailAndPassword(email, password).isPresent();
+    }
 }
