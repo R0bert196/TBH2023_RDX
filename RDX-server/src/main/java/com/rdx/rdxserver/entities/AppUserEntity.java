@@ -22,7 +22,11 @@ public class AppUserEntity {
     )
     @Access(AccessType.PROPERTY)
     private Integer id;
+    private String name;
+    private String email;
+    private String password;
     private String textCV;
+    private Boolean verified;
 
     @ManyToMany(mappedBy = "appUserEntities")
     private Set<ContractEntity> contractEntities = new LinkedHashSet<>();
