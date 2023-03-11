@@ -2,7 +2,9 @@ package com.rdx.rdxserver.services;
 
 import com.rdx.rdxserver.entities.AppUserEntity;
 import com.rdx.rdxserver.repositories.AppUserRepository;
+import com.rdx.rdxserver.utils.JwtUtil;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +13,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class AppUserService {
+
+    @Value("${jwt.secret}")
+    private String SECRET_KEY;
 
 
     private final AppUserRepository appUserRepository;
@@ -60,4 +65,11 @@ public class AppUserService {
         }
         return BCrypt.checkpw(password, user.getPassword());
     }
+
+
+    public AppUserEntity getUserByToken(String token) {
+        String email = JwtUtil.getEmailFromToken(token.substring(7), SECRET_KEY);
+        return appUserRepository.findByEmail(email).orElse(null);
+    }
+
 }
