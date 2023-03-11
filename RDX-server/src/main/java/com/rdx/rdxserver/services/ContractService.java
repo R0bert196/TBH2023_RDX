@@ -29,7 +29,6 @@ public class ContractService {
                 .builder()
                 .profileText(tempContractEntity.getProfileText())
                 .companyEntity(tempContractEntity.getCompanyEntity())
-                .expirationDate(tempContractEntity.getExpirationDate())
 //                .wallet(walletEntity)
                 .build();
 
@@ -50,7 +49,7 @@ public class ContractService {
         Optional<ContractEntity> optionalOldContract = contractRepository.findById(newContract.getId());
         if (optionalOldContract.isEmpty()) return null;
         ContractEntity oldContract = optionalOldContract.get();
-        oldContract.setExpirationDate(newContract.getExpirationDate());
+//        oldContract.setExpirationDate(newContract.getExpirationDate());
         //TODO: Add wallet to change ?
         contractRepository.save(oldContract);
         return oldContract;

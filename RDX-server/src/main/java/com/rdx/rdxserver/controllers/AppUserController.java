@@ -5,6 +5,7 @@ import com.rdx.rdxserver.models.AuthRequest;
 import com.rdx.rdxserver.services.AppUserService;
 
 import com.rdx.rdxserver.utils.JwtUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,9 @@ import java.util.List;
 @RequestMapping("/api/user")
 @CrossOrigin
 public class AppUserController {
+
+    @Value("${jwt.secret}")
+    private String SECRET_KEY;
 
     private final AppUserService appUserService;
 
@@ -36,9 +40,9 @@ public class AppUserController {
 
 
     @PostMapping(value = "/register", produces = {"application/json"})
-    private ResponseEntity<String> saveUser(@RequestBody AppUserEntity tempAppuser) {
+    private ResponseEntity<String> saveUser(@RequestBody AppUserEntity tempAppUser) {
 
-        AppUserEntity appUserEntity = appUserService.registerUser(tempAppuser);
+        AppUserEntity appUserEntity = appUserService.registerUser(tempAppUser);
         return appUserEntity == null ? ResponseEntity.status(HttpStatus.CONFLICT).body("Email taken") : ResponseEntity.status(HttpStatus.CREATED).body("User created");
     }
 
@@ -49,7 +53,7 @@ public class AppUserController {
         boolean isAuthenticated = appUserService.authenticateUser(request.getEmail(), request.getPassword());
         if (isAuthenticated) {
             // Generate a JWT token for the user
-            String token = JwtUtil.generateToken(request.getEmail());
+            String token = JwtUtil.generateToken(request.getEmail(), SECRET_KEY);
             return ResponseEntity.ok(token);
         } else {
             // Return an error message

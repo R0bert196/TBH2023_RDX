@@ -45,6 +45,10 @@ public class AppUserService {
     }
 
     public boolean authenticateUser(String email, String password) {
-        return appUserRepository.findByEmailAndPassword(email, password).isPresent();
+        AppUserEntity user = appUserRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return false;
+        }
+        return BCrypt.checkpw(password, user.getPassword());
     }
 }
