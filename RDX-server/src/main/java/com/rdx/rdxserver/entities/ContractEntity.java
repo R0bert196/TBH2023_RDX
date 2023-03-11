@@ -45,8 +45,8 @@ public class ContractEntity {
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private CompanyEntity companyEntity;
 
-
-
-
+    @OneToOne
+    @JoinColumn(name = "wallet_id", referencedColumnName = "id")
+    private WalletEntity walletEntity;
 
 }
