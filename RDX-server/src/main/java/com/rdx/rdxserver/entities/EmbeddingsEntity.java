@@ -1,5 +1,6 @@
 package com.rdx.rdxserver.entities;
 
+import com.rdx.rdxserver.converters.FloatArrayConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +22,8 @@ public class EmbeddingsEntity {
     @Access(AccessType.PROPERTY)
     private Integer id;
 
+    @Convert(converter = FloatArrayConverter.class)
+    @Column(length = 483647)
     private float[] values;
 
 }
