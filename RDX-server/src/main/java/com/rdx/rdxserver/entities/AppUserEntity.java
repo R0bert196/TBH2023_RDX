@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -37,6 +38,7 @@ public class AppUserEntity {
 
     @ManyToOne
     @JoinColumn(name = "wallet_id", referencedColumnName = "id")
+    @Cascade(org.hibernate.annotations.CascadeType.PERSIST)
     private WalletEntity walletEntity;
 
     @OneToOne(orphanRemoval = true)
