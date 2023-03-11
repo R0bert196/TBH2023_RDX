@@ -18,7 +18,12 @@ public class AppUserService {
     }
 
     public AppUserEntity getUserById(int id) {
-        return appUserRepository.findById(id).orElse(null);
+        return appUserRepository.findById(id)
+                .map(user -> {
+                    user.setPassword("");
+                    return user;
+                })
+                .orElse(null);
     }
 
     public AppUserEntity registerUser(AppUserEntity tempAppUser) {
