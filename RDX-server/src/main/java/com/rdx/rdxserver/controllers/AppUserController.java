@@ -36,9 +36,9 @@ public class AppUserController {
 
 
     @PostMapping(value = "/register", produces = {"application/json"})
-    private ResponseEntity<String> saveUser(@RequestBody AppUserEntity tempAppuser) {
+    private ResponseEntity<String> saveUser(@RequestBody AppUserEntity tempAppUser) {
 
-        AppUserEntity appUserEntity = appUserService.registerUser(tempAppuser);
+        AppUserEntity appUserEntity = appUserService.registerUser(tempAppUser);
         return appUserEntity == null ? ResponseEntity.status(HttpStatus.CONFLICT).body("Email taken") : ResponseEntity.status(HttpStatus.CREATED).body("User created");
     }
 
