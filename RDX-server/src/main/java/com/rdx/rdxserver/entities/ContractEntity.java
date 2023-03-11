@@ -30,7 +30,7 @@ public class ContractEntity {
     // user sa leg ca lista
     //embedding sa le leg
     private String profileText;
-    private LocalDate expirationDate;
+    private Boolean paid;
     @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "profile_embeddings_id", unique = true, referencedColumnName = "id")
     private EmbeddingsEntity embeddingsEntity;
