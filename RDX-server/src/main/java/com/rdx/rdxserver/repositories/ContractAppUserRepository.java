@@ -14,5 +14,6 @@ public interface ContractAppUserRepository extends JpaRepository<ContractAppUser
     @Query(value = "select * from contract_appuser where contract_id = :contractId and cosine_similarity > 0.5",nativeQuery = true)
     List<ContractAppUserEntity> findAllByContractId(int contractId);
 
+    List<ContractAppUserEntity> findByContract_Id(int contractId);
     Optional<ContractAppUserEntity> findByAppUser_Id(int appUserId);
 }
