@@ -35,9 +35,6 @@ public class AppUserEntity {
     @Column(length = 2000)
     private String idealTextProfile;
 
-//    @ManyToMany(mappedBy = "appUserEntities")
-//    private Set<ContractEntity> contractEntities = new LinkedHashSet<>();
-
     @JsonIgnore
     @OneToMany(mappedBy = "appUser")
     private Set<ContractAppUserEntity> companyAssoc;
@@ -55,8 +52,5 @@ public class AppUserEntity {
     @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "company_id")
     private CompanyEntity companyEntity;
-
-//    @Transient
-//    private String embeddingScore;
 
 }

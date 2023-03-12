@@ -62,5 +62,9 @@ public class AppUserController {
         }
     }
 
-
+    @GetMapping(value = "/getByContract/", produces = {"application/json"})
+    public ResponseEntity<List<AppUserEntity>> getAppUsersForContract(@PathVariable Integer contractId) {
+//        return null;
+        return ResponseEntity.ok(appUserService.getAppUsersForContract(contractId));
+    }
 }
