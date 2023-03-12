@@ -44,6 +44,14 @@ public class ContractController {
     //TODO: DELETE UNSAFE !
     }
 
+    @GetMapping(value = "/my-contracts", produces = {"application/json"})
+    private ResponseEntity<?> findAllByUserId(@RequestParam("id") int id) {
+        return ResponseEntity.ok(contractService.findAllByUserId(id));
+    }
+
+
+
+
     @GetMapping(value="/getByCompanyId",produces = {"application/json"})
     private ResponseEntity<List<ContractEntity>> getByCompanyId(@RequestParam int companyId){
         return ResponseEntity.ok(contractService.findByCompanyId(companyId));

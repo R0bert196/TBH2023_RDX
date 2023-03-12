@@ -96,4 +96,8 @@ public class ContractService {
         contractRepository.save(oldContract);
         return oldContract;
     }
+
+    public List<ContractEntity> findAllByUserId(int id) {
+        return contractRepository.findAllByUserId(id);
+    }
 }
