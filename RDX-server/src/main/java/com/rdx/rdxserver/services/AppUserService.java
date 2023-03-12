@@ -30,12 +30,14 @@ public class AppUserService {
     private final ContractRepository contractRepository;
     private final ContractAppUserRepository contractAppUserRepository;
     private final OpenAiApi openAiApi;
+    private final EmbeddingsService embeddingsService;
 
-    public AppUserService(AppUserRepository appUserRepository, ContractRepository contractRepository, ContractAppUserRepository contractAppUserRepository, OpenAiApi openAiApi) {
+    public AppUserService(AppUserRepository appUserRepository, ContractRepository contractRepository, ContractAppUserRepository contractAppUserRepository, OpenAiApi openAiApi, EmbeddingsService embeddingsService) {
         this.appUserRepository = appUserRepository;
         this.contractRepository = contractRepository;
         this.contractAppUserRepository = contractAppUserRepository;
         this.openAiApi = openAiApi;
+        this.embeddingsService = embeddingsService;
     }
 
     public AppUserEntity getUserById(int id) {
@@ -54,6 +56,9 @@ public class AppUserService {
 
         String idealTextProfile = openAiApi.getIdealProfileForDescription(tempAppUser.getTextCV());
 
+        float[] textEmbeddings = openAiApi.getTextEmbeddings(idealTextProfile);
+        EmbeddingsEntity savedEmbeddings = embeddingsService.createAndSaveEmbeddings(textEmbeddings);
+
         AppUserEntity newUser = AppUserEntity.builder()
                 .name(tempAppUser.getName())
                 .email(tempAppUser.getEmail())
@@ -62,6 +67,7 @@ public class AppUserService {
                 .verified(false)
                 .textCV(tempAppUser.getTextCV())
                 .idealTextProfile(idealTextProfile)
+                .embeddingsEntity(savedEmbeddings)
                 .build();
        appUserRepository.save(newUser);
        //todo sa facem embeddingul si sa il salvam dupa tot in metoda asta
