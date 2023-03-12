@@ -55,4 +55,12 @@ public class ContractController {
         ContractEntity updatedContract = contractService.update(newContract);
         return newContract == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(updatedContract);
     }
+
+
+    @GetMapping(value = "/cvs", produces = {"application/json"})
+    private ResponseEntity<?> getMatchingUsers(@RequestParam("id") int id) {
+        List<AppUserEntity> matchingCvs = appUserService.getMatchingCvs(id);
+        return ResponseEntity.ok(matchingCvs);
+    }
+
 }

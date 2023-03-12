@@ -3,12 +3,17 @@ package com.rdx.rdxserver.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rdx.rdxserver.apis.OpenAiApi;
 import com.rdx.rdxserver.entities.AppUserEntity;
+import com.rdx.rdxserver.entities.ContractAppUserEntity;
+import com.rdx.rdxserver.entities.ContractEntity;
 import com.rdx.rdxserver.repositories.AppUserRepository;
+import com.rdx.rdxserver.repositories.ContractAppUserRepository;
+import com.rdx.rdxserver.repositories.ContractRepository;
 import com.rdx.rdxserver.utils.JwtUtil;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,10 +26,14 @@ public class AppUserService {
 
 
     private final AppUserRepository appUserRepository;
+    private final ContractRepository contractRepository;
+    private final ContractAppUserRepository contractAppUserRepository;
     private final OpenAiApi openAiApi;
 
-    public AppUserService(AppUserRepository appUserRepository, OpenAiApi openAiApi) {
+    public AppUserService(AppUserRepository appUserRepository, ContractRepository contractRepository, ContractAppUserRepository contractAppUserRepository, OpenAiApi openAiApi) {
         this.appUserRepository = appUserRepository;
+        this.contractRepository = contractRepository;
+        this.contractAppUserRepository = contractAppUserRepository;
         this.openAiApi = openAiApi;
     }
 
@@ -85,5 +94,24 @@ public class AppUserService {
                     return user;
                 })
                 .orElse(null);
+    }
+
+    public List<AppUserEntity> getMatchingCvs(int contractId) {
+
+
+        ContractEntity contract = contractRepository.findById(contractId).get();
+
+        float budget = contract.getBudget();
+        List<ContractAppUserEntity> matchingAppUserEntity = contractAppUserRepository.findAllByContractId(contractId);
+        List<AppUserEntity> matchingUsers = new ArrayList<>();
+
+        for (ContractAppUserEntity matchingUser : matchingAppUserEntity) {
+            matchingUsers.add(appUserRepository.findById(matchingUser.getAppUser().getId()).get());
+            if (budget >= matchingUsers.size()) {
+                break;
+            }
+        }
+        return matchingUsers;
+
     }
 }
