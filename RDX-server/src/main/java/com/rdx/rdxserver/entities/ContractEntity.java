@@ -28,10 +28,6 @@ public class ContractEntity {
     @Access(AccessType.PROPERTY)
     private Integer id;
 
-    //company id sa le leg
-    //wallet sa le leg
-    // user sa leg ca lista
-    //embedding sa le leg
     private String profileText;
     private Boolean paid = false;
     private float budget;

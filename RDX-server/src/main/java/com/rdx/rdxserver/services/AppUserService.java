@@ -161,4 +161,7 @@ public class AppUserService {
     }
 
 
+    public List<AppUserEntity> getAppUsersForContract(Integer id) {
+        return appUserRepository.findByCompanyAssoc_Contract_Id(id);
+    }
 }

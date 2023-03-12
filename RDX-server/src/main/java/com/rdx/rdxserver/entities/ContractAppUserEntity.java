@@ -12,7 +12,6 @@ import lombok.*;
 @Builder
 @Table(name = "contract_appuser")
 @IdClass(ContractAppUserPk.class)
-
 public class ContractAppUserEntity {
 
     @Id
