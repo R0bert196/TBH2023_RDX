@@ -61,7 +61,13 @@ public class AppUserController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("user not found");
         }
     }
+    @PutMapping( produces = {"application/json"})
+    public ResponseEntity<AppUserEntity> updateCV(@RequestHeader(name = "Authorization") String token,@RequestBody String textCv){
+        AppUserEntity user = appUserService.getUserByToken(token);
+        user.setTextCV(textCv);
+        return ResponseEntity.ok(appUserService.save(user));
 
+    }
     @GetMapping(value = "/getByContract/", produces = {"application/json"})
     public ResponseEntity<List<AppUserEntity>> getAppUsersForContract(@PathVariable Integer contractId) {
 //        return null;
