@@ -28,6 +28,7 @@ public class AppUserEntity {
     private String name;
     private String email;
     private String password;
+    @Column(length = 1000)
     private String textCV;
     private Boolean verified;
     private String phoneNr;
