@@ -21,7 +21,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Value("${jwt.secret}")
     private String SECRET_KEY;
 
-    private final String[] excludedPaths = { "/api/user/login", "/api/user/register"};
+    private final String[] excludedPaths = { "/api"};
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
