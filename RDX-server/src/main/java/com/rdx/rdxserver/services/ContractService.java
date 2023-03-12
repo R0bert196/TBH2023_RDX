@@ -20,16 +20,18 @@ public class ContractService {
     private final OpenAiApi openAiApi;
     private final EmbeddingsService embeddingsService;
 
-    private ContractAppUserService contractAppUserService;
+    private final ContractAppUserService contractAppUserService;
+    private final AppUserService appUserService;
 
 
-    public ContractService(ContractRepository contractRepository, AppUserRepository appUserRepository, WalletService walletService, OpenAiApi openAiApi, EmbeddingsService embeddingsService, ContractAppUserService contractAppUserService) {
+    public ContractService(ContractRepository contractRepository, AppUserRepository appUserRepository, WalletService walletService, OpenAiApi openAiApi, EmbeddingsService embeddingsService, ContractAppUserService contractAppUserService, AppUserService appUserService) {
         this.contractRepository = contractRepository;
         this.appUserRepository = appUserRepository;
         this.walletService = walletService;
         this.openAiApi = openAiApi;
         this.embeddingsService = embeddingsService;
         this.contractAppUserService = contractAppUserService;
+        this.appUserService = appUserService;
     }
 
     public ContractEntity getContractById(int id) {
@@ -55,6 +57,9 @@ public class ContractService {
         EmbeddingsEntity embeddings = embeddingsService.createAndSaveEmbeddings(textEmbeddings);
 
 
+        //create an embedding score for each person in the database
+
+        appUserService.generateEmbeddingForEveryone(embeddings);
 
         ContractEntity newContract = ContractEntity
                 .builder()
