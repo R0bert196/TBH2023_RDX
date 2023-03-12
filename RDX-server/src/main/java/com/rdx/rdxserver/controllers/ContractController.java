@@ -50,8 +50,6 @@ public class ContractController {
     }
 
 
-
-
     @GetMapping(value="/getByCompanyId",produces = {"application/json"})
     private ResponseEntity<List<ContractEntity>> getByCompanyId(@RequestParam int companyId){
         return ResponseEntity.ok(contractService.findByCompanyId(companyId));

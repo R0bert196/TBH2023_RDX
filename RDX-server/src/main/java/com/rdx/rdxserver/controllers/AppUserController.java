@@ -1,6 +1,8 @@
 package com.rdx.rdxserver.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rdx.rdxserver.entities.AppUserEntity;
 import com.rdx.rdxserver.models.AuthRequest;
 import com.rdx.rdxserver.services.AppUserService;
@@ -61,16 +63,28 @@ public class AppUserController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("user not found");
         }
     }
-    @PutMapping( produces = {"application/json"})
-    public ResponseEntity<AppUserEntity> updateCV(@RequestHeader(name = "Authorization") String token,@RequestBody String textCv){
+
+    @PutMapping(produces = {"application/json"})
+    public ResponseEntity<AppUserEntity> updateCV(@RequestHeader(name = "Authorization") String token, @RequestBody String textCv) {
         AppUserEntity user = appUserService.getUserByToken(token);
-        user.setTextCV(textCv);
-        return ResponseEntity.ok(appUserService.save(user));
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode jsonNode = mapper.readTree(textCv);
+            user.setTextCV(jsonNode.get("textCv").asText());
+            return ResponseEntity.ok(appUserService.save(user));
+
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().build();
+        }
 
     }
+
     @GetMapping(value = "/getByContract/", produces = {"application/json"})
-    public ResponseEntity<List<AppUserEntity>> getAppUsersForContract(@PathVariable Integer contractId) {
-//        return null;
+    public ResponseEntity<List<AppUserEntity>> getAppUsersForContract(@RequestParam("contractId") Integer contractId) {
         return ResponseEntity.ok(appUserService.getAppUsersForContract(contractId));
+    }
+    @GetMapping(value = "/getByCompany/", produces = {"application/json"})
+    public ResponseEntity<List<AppUserEntity>> getAppUsersForCompany(@RequestParam("companyId") Integer companyId) {
+        return ResponseEntity.ok(appUserService.getAppUsersForcompany(companyId));
     }
 }

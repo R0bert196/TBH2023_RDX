@@ -167,4 +167,9 @@ public class AppUserService {
 
     public AppUserEntity save(AppUserEntity user) {return appUserRepository.save(user);
     }
+
+
+
+    public List<AppUserEntity> getAppUsersForcompany(Integer companyId) {return appUserRepository.getAppUsersForcompany(companyId);};
+
 }
