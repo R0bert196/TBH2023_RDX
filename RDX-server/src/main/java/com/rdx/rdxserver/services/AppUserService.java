@@ -5,6 +5,7 @@ import com.rdx.rdxserver.apis.OpenAiApi;
 import com.rdx.rdxserver.entities.AppUserEntity;
 import com.rdx.rdxserver.entities.ContractAppUserEntity;
 import com.rdx.rdxserver.entities.ContractEntity;
+import com.rdx.rdxserver.entities.EmbeddingsEntity;
 import com.rdx.rdxserver.repositories.AppUserRepository;
 import com.rdx.rdxserver.repositories.ContractAppUserRepository;
 import com.rdx.rdxserver.repositories.ContractRepository;
@@ -114,4 +115,38 @@ public class AppUserService {
         return matchingUsers;
 
     }
+
+    public void generateEmbeddingForEveryone(EmbeddingsEntity embeddings) {
+        float[] contractEmbeddings = embeddings.getValues();
+        List<AppUserEntity> userListEmbeddings = this.findAll();
+
+        //adds an embedding score to each user id corelated to each contract id
+
+        for (AppUserEntity appUser : userListEmbeddings) {
+            ContractAppUserEntity contractAppUserEntity = contractAppUserRepository.findByAppUser_Id(appUser.getId()).get();
+            float[] currUserEmbeddings = appUser.getEmbeddingsEntity().getValues();
+            float v = cosineSimilarity(contractEmbeddings, currUserEmbeddings);
+            contractAppUserEntity.setCosineSimilarity(v);
+            contractAppUserRepository.save(contractAppUserEntity);
+        }
+
+
+
+    }
+
+
+    // Method to calculate cosine similarity between two vectors
+    public static float cosineSimilarity(float[] vectorA, float[] vectorB) {
+        double dotProduct = 0.0;
+        double normA = 0.0;
+        double normB = 0.0;
+        for (int i = 0; i < vectorA.length; i++) {
+            dotProduct += vectorA[i] * vectorB[i];
+            normA += Math.pow(vectorA[i], 2);
+            normB += Math.pow(vectorB[i], 2);
+        }
+        return (float) (dotProduct / (Math.sqrt(normA) * Math.sqrt(normB)));
+    }
+
+
 }
