@@ -25,5 +25,6 @@ public class ContractAppUserEntity {
     @JoinColumn(name = "contract_id", referencedColumnName = "id")
     private ContractEntity contract;
 
+    @Column(columnDefinition = "numeric")
     private Float cosineSimilarity;
 }
