@@ -1,5 +1,7 @@
 package com.rdx.rdxserver.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.rdx.rdxserver.apis.OpenAiApi;
 import com.rdx.rdxserver.entities.AppUserEntity;
 import com.rdx.rdxserver.repositories.AppUserRepository;
 import com.rdx.rdxserver.utils.JwtUtil;
@@ -19,9 +21,11 @@ public class AppUserService {
 
 
     private final AppUserRepository appUserRepository;
+    private final OpenAiApi openAiApi;
 
-    public AppUserService(AppUserRepository appUserRepository) {
+    public AppUserService(AppUserRepository appUserRepository, OpenAiApi openAiApi) {
         this.appUserRepository = appUserRepository;
+        this.openAiApi = openAiApi;
     }
 
     public AppUserEntity getUserById(int id) {
@@ -33,12 +37,13 @@ public class AppUserService {
                 .orElse(null);
     }
 
-    public AppUserEntity registerUser(AppUserEntity tempAppUser) {
+    public AppUserEntity registerUser(AppUserEntity tempAppUser) throws JsonProcessingException {
        if (appUserRepository.findByEmail(tempAppUser.getEmail()).isPresent()) {
            return null;
        }
-//        WalletEntity wallet = tempAppUser.getWalletEntity();
-       // walletService.save(wallet)
+
+        String idealTextProfile = openAiApi.getIdealProfileForDescription(tempAppUser.getTextCV());
+
         AppUserEntity newUser = AppUserEntity.builder()
                 .name(tempAppUser.getName())
                 .email(tempAppUser.getEmail())
@@ -46,6 +51,7 @@ public class AppUserService {
                 .walletEntity(tempAppUser.getWalletEntity())
                 .verified(false)
                 .textCV(tempAppUser.getTextCV())
+                .idealTextProfile(idealTextProfile)
                 .build();
        appUserRepository.save(newUser);
        //todo sa facem embeddingul si sa il salvam dupa tot in metoda asta
