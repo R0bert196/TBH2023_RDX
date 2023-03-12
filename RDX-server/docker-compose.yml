@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    image: 'neetsmnt.azurecr.io/rdxserver'
+    platform: 'linux/x86_64'
+    expose:
+        - 8080
+    ports:
+        - 8080:8080
