@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -104,16 +105,21 @@ public class AppUserService {
     }
 
     public List<AppUserEntity> getMatchingCvs(int contractId) {
-
-
         ContractEntity contract = contractRepository.findById(contractId).get();
-
         float budget = contract.getBudget();
-        List<ContractAppUserEntity> matchingAppUserEntity = contractAppUserRepository.findAllByContractId(contractId);
+        List<ContractAppUserEntity> matchingAppUserEntity = contractAppUserRepository.findByContract_Id(contractId);
         List<AppUserEntity> matchingUsers = new ArrayList<>();
 
         for (ContractAppUserEntity matchingUser : matchingAppUserEntity) {
-            matchingUsers.add(appUserRepository.findById(matchingUser.getAppUser().getId()).get());
+            Optional<AppUserEntity> optionalFetchedUser = appUserRepository.findById(matchingUser.getAppUser().getId());
+            if (optionalFetchedUser.isEmpty()) continue;
+            AppUserEntity savedUser = new AppUserEntity();
+            savedUser.setEmail(optionalFetchedUser.get().getEmail());
+            savedUser.setName(optionalFetchedUser.get().getName());
+            savedUser.setTextCV(optionalFetchedUser.get().getTextCV());
+            savedUser.setVerified(optionalFetchedUser.get().getVerified());
+            savedUser.setPhoneNr(optionalFetchedUser.get().getPhoneNr());
+            matchingUsers.add(savedUser);
             if (budget >= matchingUsers.size()) {
                 break;
             }
