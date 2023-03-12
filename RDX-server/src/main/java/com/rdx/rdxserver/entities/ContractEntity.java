@@ -1,5 +1,6 @@
 package com.rdx.rdxserver.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.Cascade;
 
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -33,16 +35,14 @@ public class ContractEntity {
     private String profileText;
     private Boolean paid = false;
     private float budget;
+    private LocalDate startDate;
     @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "profile_embeddings_id", unique = true, referencedColumnName = "id")
     private EmbeddingsEntity embeddingsEntity;
 
-    @ManyToMany
-    @JoinTable(name = "contract_app_user",
-            joinColumns = @JoinColumn(name = "contract_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "app_user_id", referencedColumnName = "id"))
-    private Set<AppUserEntity> appUserEntities = new LinkedHashSet<>();
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "contract")
+    private Set<ContractAppUserEntity> appUserAssoc;
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private CompanyEntity companyEntity;

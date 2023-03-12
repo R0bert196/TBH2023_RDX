@@ -1,5 +1,6 @@
 package com.rdx.rdxserver.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cascade;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -29,8 +31,16 @@ public class AppUserEntity {
     private String textCV;
     private Boolean verified;
 
-    @ManyToMany(mappedBy = "appUserEntities")
-    private Set<ContractEntity> contractEntities = new LinkedHashSet<>();
+    @Column(length = 2000)
+    private String idealTextProfile;
+
+//    @ManyToMany(mappedBy = "appUserEntities")
+//    private Set<ContractEntity> contractEntities = new LinkedHashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "appUser")
+    private Set<ContractAppUserEntity> companyAssoc;
+
 
     @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "embeddings_cv_id", referencedColumnName = "id")

@@ -1,5 +1,6 @@
 package com.rdx.rdxserver.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rdx.rdxserver.entities.AppUserEntity;
 import com.rdx.rdxserver.models.AuthRequest;
 import com.rdx.rdxserver.services.AppUserService;
@@ -40,7 +41,7 @@ public class AppUserController {
 
 
     @PostMapping(value = "/register", produces = {"application/json"})
-    private ResponseEntity<String> saveUser(@RequestBody AppUserEntity tempAppUser) {
+    private ResponseEntity<String> saveUser(@RequestBody AppUserEntity tempAppUser) throws JsonProcessingException {
 
         AppUserEntity appUserEntity = appUserService.registerUser(tempAppUser);
         return appUserEntity == null ? ResponseEntity.status(HttpStatus.CONFLICT).body("Email taken") : ResponseEntity.status(HttpStatus.CREATED).body("User created");
