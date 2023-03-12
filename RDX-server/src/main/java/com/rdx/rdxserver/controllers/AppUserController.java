@@ -83,4 +83,8 @@ public class AppUserController {
     public ResponseEntity<List<AppUserEntity>> getAppUsersForContract(@RequestParam("contractId") Integer contractId) {
         return ResponseEntity.ok(appUserService.getAppUsersForContract(contractId));
     }
+    @GetMapping(value = "/getByCompany/", produces = {"application/json"})
+    public ResponseEntity<List<AppUserEntity>> getAppUsersForCompany(@RequestParam("companyId") Integer companyId) {
+        return ResponseEntity.ok(appUserService.getAppUsersForcompany(companyId));
+    }
 }
