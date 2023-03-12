@@ -7,6 +7,7 @@ import com.rdx.rdxserver.repositories.AppUserRepository;
 import com.rdx.rdxserver.repositories.ContractRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,13 +20,16 @@ public class ContractService {
     private final OpenAiApi openAiApi;
     private final EmbeddingsService embeddingsService;
 
+    private ContractAppUserService contractAppUserService;
 
-    public ContractService(ContractRepository contractRepository, AppUserRepository appUserRepository, WalletService walletService, OpenAiApi openAiApi, EmbeddingsService embeddingsService) {
+
+    public ContractService(ContractRepository contractRepository, AppUserRepository appUserRepository, WalletService walletService, OpenAiApi openAiApi, EmbeddingsService embeddingsService, ContractAppUserService contractAppUserService) {
         this.contractRepository = contractRepository;
         this.appUserRepository = appUserRepository;
         this.walletService = walletService;
         this.openAiApi = openAiApi;
         this.embeddingsService = embeddingsService;
+        this.contractAppUserService = contractAppUserService;
     }
 
     public ContractEntity getContractById(int id) {
@@ -50,6 +54,8 @@ public class ContractService {
         float[] textEmbeddings = openAiApi.getTextEmbeddings(tempContractEntity.getProfileText());
         EmbeddingsEntity embeddings = embeddingsService.createAndSaveEmbeddings(textEmbeddings);
 
+
+
         ContractEntity newContract = ContractEntity
                 .builder()
                 .profileText(tempContractEntity.getProfileText())
@@ -57,10 +63,14 @@ public class ContractService {
                 .companyEntity(company)
                 .walletEntity(wallet)
                 .embeddingsEntity(embeddings)
+                .startDate(LocalDate.now())
                 .paid(false)
                 .build();
 
-        return contractRepository.save(newContract);
+
+        ContractEntity contract = contractRepository.save(newContract);
+        contractAppUserService.save(user, contract);
+        return contract;
 
     }
 
