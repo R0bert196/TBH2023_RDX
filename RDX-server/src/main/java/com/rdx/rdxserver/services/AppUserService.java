@@ -78,4 +78,12 @@ public class AppUserService {
         return appUserRepository.findByEmail(email).orElse(null);
     }
 
+    public AppUserEntity getUserByEmail(String email) {
+        return appUserRepository.findByEmail(email)
+                .map(user -> {
+                    user.setPassword(null);
+                    return user;
+                })
+                .orElse(null);
+    }
 }
