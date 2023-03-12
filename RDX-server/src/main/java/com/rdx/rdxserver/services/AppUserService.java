@@ -3,12 +3,18 @@ package com.rdx.rdxserver.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rdx.rdxserver.apis.OpenAiApi;
 import com.rdx.rdxserver.entities.AppUserEntity;
+import com.rdx.rdxserver.entities.ContractAppUserEntity;
+import com.rdx.rdxserver.entities.ContractEntity;
+import com.rdx.rdxserver.entities.EmbeddingsEntity;
 import com.rdx.rdxserver.repositories.AppUserRepository;
+import com.rdx.rdxserver.repositories.ContractAppUserRepository;
+import com.rdx.rdxserver.repositories.ContractRepository;
 import com.rdx.rdxserver.utils.JwtUtil;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,11 +27,17 @@ public class AppUserService {
 
 
     private final AppUserRepository appUserRepository;
+    private final ContractRepository contractRepository;
+    private final ContractAppUserRepository contractAppUserRepository;
     private final OpenAiApi openAiApi;
+    private final EmbeddingsService embeddingsService;
 
-    public AppUserService(AppUserRepository appUserRepository, OpenAiApi openAiApi) {
+    public AppUserService(AppUserRepository appUserRepository, ContractRepository contractRepository, ContractAppUserRepository contractAppUserRepository, OpenAiApi openAiApi, EmbeddingsService embeddingsService) {
         this.appUserRepository = appUserRepository;
+        this.contractRepository = contractRepository;
+        this.contractAppUserRepository = contractAppUserRepository;
         this.openAiApi = openAiApi;
+        this.embeddingsService = embeddingsService;
     }
 
     public AppUserEntity getUserById(int id) {
@@ -44,6 +56,9 @@ public class AppUserService {
 
         String idealTextProfile = openAiApi.getIdealProfileForDescription(tempAppUser.getTextCV());
 
+        float[] textEmbeddings = openAiApi.getTextEmbeddings(idealTextProfile);
+        EmbeddingsEntity savedEmbeddings = embeddingsService.createAndSaveEmbeddings(textEmbeddings);
+
         AppUserEntity newUser = AppUserEntity.builder()
                 .name(tempAppUser.getName())
                 .email(tempAppUser.getEmail())
@@ -52,6 +67,7 @@ public class AppUserService {
                 .verified(false)
                 .textCV(tempAppUser.getTextCV())
                 .idealTextProfile(idealTextProfile)
+                .embeddingsEntity(savedEmbeddings)
                 .build();
        appUserRepository.save(newUser);
        //todo sa facem embeddingul si sa il salvam dupa tot in metoda asta
@@ -86,4 +102,57 @@ public class AppUserService {
                 })
                 .orElse(null);
     }
+
+    public List<AppUserEntity> getMatchingCvs(int contractId) {
+
+
+        ContractEntity contract = contractRepository.findById(contractId).get();
+
+        float budget = contract.getBudget();
+        List<ContractAppUserEntity> matchingAppUserEntity = contractAppUserRepository.findAllByContractId(contractId);
+        List<AppUserEntity> matchingUsers = new ArrayList<>();
+
+        for (ContractAppUserEntity matchingUser : matchingAppUserEntity) {
+            matchingUsers.add(appUserRepository.findById(matchingUser.getAppUser().getId()).get());
+            if (budget >= matchingUsers.size()) {
+                break;
+            }
+        }
+        return matchingUsers;
+
+    }
+
+    public void generateEmbeddingForEveryone(EmbeddingsEntity embeddings) {
+        float[] contractEmbeddings = embeddings.getValues();
+        List<AppUserEntity> userListEmbeddings = this.findAll();
+
+        //adds an embedding score to each user id corelated to each contract id
+
+        for (AppUserEntity appUser : userListEmbeddings) {
+            ContractAppUserEntity contractAppUserEntity = contractAppUserRepository.findByAppUser_Id(appUser.getId()).get();
+            float[] currUserEmbeddings = appUser.getEmbeddingsEntity().getValues();
+            float v = cosineSimilarity(contractEmbeddings, currUserEmbeddings);
+            contractAppUserEntity.setCosineSimilarity(v);
+            contractAppUserRepository.save(contractAppUserEntity);
+        }
+
+
+
+    }
+
+
+    // Method to calculate cosine similarity between two vectors
+    public static float cosineSimilarity(float[] vectorA, float[] vectorB) {
+        double dotProduct = 0.0;
+        double normA = 0.0;
+        double normB = 0.0;
+        for (int i = 0; i < vectorA.length; i++) {
+            dotProduct += vectorA[i] * vectorB[i];
+            normA += Math.pow(vectorA[i], 2);
+            normB += Math.pow(vectorB[i], 2);
+        }
+        return (float) (dotProduct / (Math.sqrt(normA) * Math.sqrt(normB)));
+    }
+
+
 }

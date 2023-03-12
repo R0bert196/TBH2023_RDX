@@ -30,6 +30,7 @@ public class AppUserEntity {
     private String password;
     private String textCV;
     private Boolean verified;
+    private String phoneNr;
 
     @Column(length = 2000)
     private String idealTextProfile;
@@ -54,5 +55,8 @@ public class AppUserEntity {
     @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "company_id")
     private CompanyEntity companyEntity;
+
+//    @Transient
+//    private String embeddingScore;
 
 }
