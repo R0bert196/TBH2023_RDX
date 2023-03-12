@@ -1,23 +1,30 @@
 package com.rdx.rdxserver.utils;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rdx.rdxserver.entities.AppUserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class JwtUtil {
 
+    private static final ObjectMapper mapper = new ObjectMapper();
 
 
 
-
-    public static String generateToken(String username, String SECRET_KEY) {
+    public static String generateToken(AppUserEntity user, String SECRET_KEY) {
         Date now = new Date();
+        Map<String, Object> map = mapper.convertValue(user, new TypeReference<Map<String, Object>>() {});
         Date expiryDate = new Date(now.getTime() + 3600000); // Token expiration time is 1 hour
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(user.getEmail())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
+                .addClaims(map)
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .compact();
     }
