@@ -54,7 +54,7 @@ public class AppUserController {
         boolean isAuthenticated = appUserService.authenticateUser(request.getEmail(), request.getPassword());
         if (isAuthenticated) {
             // Generate a JWT token for the user
-            String token = JwtUtil.generateToken(request.getEmail(), SECRET_KEY);
+            String token = JwtUtil.generateToken(appUserService.getUserByEmail(request.getEmail()), SECRET_KEY);
             return ResponseEntity.ok(token);
         } else {
             // Return an error message
